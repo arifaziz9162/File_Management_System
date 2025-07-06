@@ -1,0 +1,8 @@
+2025-07-01 23:04:44,286 - File_Manager_Logger - INFO - File college.txt created successfully.
+2025-07-01 23:05:14,226 - File_Manager_Logger - INFO - File office.txt created successfully.
+2025-07-01 23:05:25,642 - File_Manager_Logger - INFO - Listed all files.
+2025-07-01 23:05:54,543 - File_Manager_Logger - INFO - Read file college.txt
+2025-07-01 23:06:28,940 - File_Manager_Logger - INFO - Appended content to college.txt
+2025-07-01 23:07:13,780 - File_Manager_Logger - INFO - Appended content to office.txt
+2025-07-01 23:07:24,157 - File_Manager_Logger - INFO - Read file office.txt
+2025-07-01 23:07:31,294 - File_Manager_Logger - INFO - Program exited by user.
