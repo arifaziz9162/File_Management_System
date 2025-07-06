@@ -1,8 +1,9 @@
-import re
+import os
 import logging
 
+
 # File handler and stream handler setup
-logger = logging.getLogger("Contact_Book_Logger")
+logger = logging.getLogger("File_Manager_Logger")
 logger.setLevel(logging.DEBUG)
 
 if logger.hasHandlers():
@@ -14,174 +15,145 @@ stream_handler = logging.StreamHandler()
 stream_handler.setLevel(logging.DEBUG)  
 stream_handler.setFormatter(formatter)
 
-file_handler = logging.FileHandler("contact_book.log")
+file_handler = logging.FileHandler("file_manager.log")
 file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(formatter)
 
 logger.addHandler(stream_handler)
 logger.addHandler(file_handler)
 
-# --- Custom Exceptions ---
-class ContactBookError(Exception):
-    """Custom exception class for Contact book related errors."""
-    pass
-
-class ContactAlreadyExistsError(ContactBookError):
-    def __init__(self, name):
-        super().__init__(f"Contact {name} already exists!")
-
-class ContactNotFoundError(ContactBookError):
-    def __init__(self, name):
-        super().__init__(f"Contact {name} not found!")
-
-class InvalidContactDataError(ContactBookError):
-    def __init__(self, message=(" ")):
-        super().__init__(message)
-
-class ContactBook:
-    def __init__(self):
-        self.contacts = {}
-
-    def create_contact(self):
-        name = input("Enter your name = ")
-        if name in self.contacts:
-            print(f"Contact {name} already exists!")
-            logger.warning(f"Create failed: {name} already exists.", exc_info=True)
-            raise ContactAlreadyExistsError(name)
-        else:
-
-            try:
-                age = int(input("Enter the age = "))
-                email = input("Enter the email = ").strip()
-                gmail_pattern = r'^[a-zA-Z0-9._%+-]+@gmail\.com$'
-                if not re.match(gmail_pattern, email):
-                    raise InvalidContactDataError("Email must be a valid Gmail address ending with '@gmail.com'.")
-                mobile_no = input("Enter the mobile number = ")
-
-                if not mobile_no.isdigit():
-                    raise InvalidContactDataError("Mobile number must be digits only.")
-                
-                if len(mobile_no) != 10:
-                    raise InvalidContactDataError("Mobile number must be 10 digit.")
-                
-                self.contacts[name] = {'age': age, 'email': email, 'mobile_no': mobile_no}
-                print(f"Contact {name} has been created successfully!")
-                logger.info(f"Contact {name} created.")
-            except ValueError as ve:
-                logger.error(f"Invalid input while creating contact", exc_info=True)
-                raise InvalidContactDataError("Age must be an integer.")
-
-    def view_contact(self):
-        name = input("Enter contact name to view = ")
-        if name not in self.contacts:
-            logger.warning(f"View failed: {name} not found.", exc_info=True)
-            raise ContactNotFoundError(name)
-        self.display_contact(name)
-
-    def update_contact(self):
-        name = input("Enter contact name to update = ")
-        if name not in self.contacts:
-            logger.warning(f"Update failed: {name} not found.", exc_info=True)
-            raise ContactNotFoundError(name)
-    
+class FileManager:
+    """File Management System for basic file operations."""
+    def create_file(self,filename):
         try:
-            age = int(input("Enter the updated age = "))
-            email = input("Enter the updated email = ")
-            gmail_pattern = r'^[a-zA-Z0-9._%+-]+@gmail\.com$'
-            if not re.match(gmail_pattern, email):
-                raise InvalidContactDataError("Email must be a valid Gmail address ending with '@gmail.com'.")
-            mobile_no = input("Enter the updated mobile number = ")
-            if not mobile_no.isdigit():
-                raise InvalidContactDataError("Mobile number must be digits only.")
-            
-            if len(mobile_no) != 10:
-                raise InvalidContactDataError("Mobile number must be 10 digit")
-            
-            self.contacts[name] = {'age': age, 'email': email, 'mobile_no': mobile_no}
-            print(f"Contact {name} updated successfully!")
-            logger.info(f"Contact {name} updated.")
 
-        except ValueError as ve:
-            logger.error(f"Invalid input while updating contact", exc_info=True)
-            raise InvalidContactDataError("Age must be an integer.")
+            with open(filename, 'x') as f:
+                logger.info(f"File {filename} created successfully.")
+                print(f"File {filename} created successfully!")
 
-    def delete_contact(self):
-        name = input("Enter contact name to delete = ")
-        if name not in self.contacts:
-            logger.warning(f"Delete failed: {name} not found.", exc_info=True)
-            raise ContactNotFoundError(name)
-        del self.contacts[name]
-        print(f"Contact {name} has been deleted successfully!")
-        logger.info(f"Contact {name} deleted.")
+        except FileExistsError as fe:
+            logger.warning(f"File {filename} already exists", exc_info=True)
+            print(str(fe))
 
-    def search_contact(self):
-        search_name = input("Enter name to search = ")
-        found = False
-        for name, contact in self.contacts.items():
-            if search_name.lower() in name.lower():
-                self.display_contact(name)
-                found = True
+        except Exception as e:
+            logger.error(f"Unexpected error while creating file", exc_info=True)
+            print(str(e))
 
-        if not found:
-            print("No contact found with that name!")
-            logger.info(f"No contact found with name like '{search_name}'")
 
-    def count_contacts(self):
-        print(f"Total contacts in your book: {len(self.contacts)}")
-        logger.info(f"Total contact count: {len(self.contacts)}")
+    def view_all_files(self):
+        try:
 
-    def display_contact(self, name):
-        contact = self.contacts[name]
-        print(f"Name: {name}, Age: {contact['age']}, Email: {contact['email']}, Mobile No: {contact['mobile_no']}")
+            files = os.listdir()
+            if not files:
+                logger.info("No files found in the directory.")
+                print("No files found in the directory.")
+
+            else:
+                print("Files in the directory:")
+                for file in files:
+                    print(file)
+                logger.info("Listed all files.")
+
+        except Exception as e:
+            logger.error(f"Unexpected error while viewing files", exc_info=True)
+            print(str(e))
+
+
+    def delete_file(self, filename):
+        try:
+
+            os.remove(filename)
+            logger.info(f"File {filename} deleted.")
+            print(f"{filename} has been deleted successfully!")
+        
+        except FileNotFoundError as fe:
+            logger.info(f"Attempted to delete non existent file {filename}.")
+            print(str(fe))
+
+        except Exception as e:
+            logger.error(f"Unexpected error while deleting file", exc_info=True)
+            print(str(e))
+
+
+    def read_file(self, filename):
+        try:
+
+            with open(filename,'r') as f:
+                content = f.read()
+                logger.info(f"Read file {filename}")
+                print(f"Content of {filename} : \n{content }")
+
+        except FileNotFoundError as fe:
+            logger.error(f"File {filename} not found for reading.", exc_info=True)
+            print(str(fe))
+        
+        except Exception as e:
+            logger.error(f"Unexpected error occurred while reading file", exc_info=True)
+            print(str(e))
+
+
+    def edit_file(self, filename):
+        try:
+
+            with open(filename,'a') as f:
+                content = input("Enter data to add = ")
+                f.write(content + "\n")
+                logger.info(f"Appended content to {filename}")
+                print(f"Content added to {filename} successfully!")
+        
+        except FileNotFoundError as fe:
+            logger.warning(f"File {filename} not found for editing.",exc_info=True)
+            print(str(fe))
+        
+        except Exception as e:
+            logger.error(f"Unexpected error occured while editing file", exc_info=True)
+            print(str(e))
+
 
     def run(self):
         while True:
-            print("\nContact Book System")
-            print("1. Create Contact")
-            print("2. View Contact")
-            print("3. Update Contact")
-            print("4. Delete Contact")
-            print("5. Search Contact")
-            print("6. Count Contact")
-            print("7. Exit")
+            print("\n********** Welcome to File Management System **********")
+            print("1: Create file")
+            print("2: View all files")
+            print("3: Delete file")
+            print("4: Read file")
+            print("5: Edit file")
+            print("6: Exit")
 
             try:
-                choice = int(input("Enter your choice = "))
+                choice = int(input("Enter your choice(1-6) = "))
 
                 if choice == 1:
-                    self.create_contact()
-                    
+                    filename = input("Enter the file-name to create = ").strip()
+                    self.create_file(filename)
+
                 elif choice == 2:
-                    self.view_contact()
+                    self.view_all_files()
 
                 elif choice == 3:
-                    self.update_contact()
+                    filename = input("Enter the file-name to delete = ").strip()
+                    self.delete_file(filename)
 
                 elif choice == 4:
-                    self.delete_contact()
+                    filename = input("Enter the file-name to read = ").strip()
+                    self.read_file(filename)
 
                 elif choice == 5:
-                    self.search_contact()
+                    filename = input("Enter the file-name to edit = ").strip()
+                    self.edit_file(filename)
 
-                elif choice == 6:
-                    self.count_contacts()
-
-                elif choice == 7:
-                    print("Closing the program...")
+                elif choice == 6 :
                     logger.info("Program exited by user.")
+                    print("Closing the program.")
                     break
 
                 else:
-                    print("Invalid input! Enter a number between 1 and 7.")
-                    logger.warning(f"Invalid menu choice: {choice}", exc_info=True)
+                    print("Invalid input!")
 
-            except (ContactAlreadyExistsError, ContactNotFoundError, InvalidContactDataError) as ce:
-                print(f"Error: {ce}")
-                logger.error(f"Custom error: {ce}", exc_info=True)
+            except ValueError as ve:
+                logger.warning(f"Invalid menu input", exc_info=True)
+                print(str(ve))
 
-            except Exception as e:
-                logger.error(f"Unexpected error while choosing", exc_info=True)
-                print(f"An Unexpected error occurred : {e}")
 
 if __name__ == "__main__":
-    ContactBook().run()
+    FileManager().run()
