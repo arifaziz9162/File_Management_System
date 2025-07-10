@@ -1,7 +1,6 @@
 import os
 import logging
 
-
 # File handler and stream handler setup
 logger = logging.getLogger("File_Manager_Logger")
 logger.setLevel(logging.DEBUG)
@@ -36,7 +35,7 @@ class FileManager:
             print(str(fe))
 
         except Exception as e:
-            logger.error(f"Unexpected error while creating file", exc_info=True)
+            logger.error("Unexpected error while creating file", exc_info=True)
             print(str(e))
 
 
@@ -55,7 +54,7 @@ class FileManager:
                 logger.info("Listed all files.")
 
         except Exception as e:
-            logger.error(f"Unexpected error while viewing files", exc_info=True)
+            logger.error("Unexpected error while viewing files", exc_info=True)
             print(str(e))
 
 
@@ -71,7 +70,7 @@ class FileManager:
             print(str(fe))
 
         except Exception as e:
-            logger.error(f"Unexpected error while deleting file", exc_info=True)
+            logger.error("Unexpected error while deleting file", exc_info=True)
             print(str(e))
 
 
@@ -88,7 +87,7 @@ class FileManager:
             print(str(fe))
         
         except Exception as e:
-            logger.error(f"Unexpected error occurred while reading file", exc_info=True)
+            logger.error("Unexpected error occurred while reading file", exc_info=True)
             print(str(e))
 
 
@@ -106,7 +105,7 @@ class FileManager:
             print(str(fe))
         
         except Exception as e:
-            logger.error(f"Unexpected error occured while editing file", exc_info=True)
+            logger.error("Unexpected error occured while editing file", exc_info=True)
             print(str(e))
 
 
@@ -151,7 +150,7 @@ class FileManager:
                     print("Invalid input!")
 
             except ValueError as ve:
-                logger.warning(f"Invalid menu input", exc_info=True)
+                logger.warning("Invalid menu input", exc_info=True)
                 print(str(ve))
 
 
